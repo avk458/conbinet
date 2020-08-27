@@ -4,46 +4,32 @@
       <a-button slot="extra" type="link" @click="handleAdd">
         新增
       </a-button>
-      <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
-        <a-list-item slot="renderItem" key="item.title" slot-scope="item">
-          <template v-for="{ type, text } in actions" slot="actions">
-        <span :key="type">
-          <a-icon :type="type" style="margin-right: 8px" />
-          {{ text }}
-        </span>
+      <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="res.data">
+        <a-list-item slot="renderItem" key="item.name" slot-scope="item">
+          <template slot="actions">
+            <a-button size="small" type="primary" icon="edit" @click="handleEdit(item)" style="margin-left: 10px"/>
+            <a-button size="small" type="danger" icon="delete" @click="handleDelete(item)"/>
           </template>
           <img
               slot="extra"
-              width="272"
+              width="168"
               alt="logo"
-              src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
+              :src="item.detailImageUrl"
           />
           <a-list-item-meta :description="item.description">
-            <a slot="title" :href="item.href">{{ item.title }}</a>
-            <a-avatar slot="avatar" :src="item.avatar" />
+            <a slot="title" :href="item.href">{{ item.name }}</a>
+            <a-avatar shape="square" slot="avatar" :size="128" :src="item.coverImageUrl" />
           </a-list-item-meta>
-          {{ item.content }}
         </a-list-item>
       </a-list>
     </a-card>
-    <AddModal ref="addModal"/>
+    <AddModal ref="addModal" @success="refresh"/>
   </div>
 </template>
 
 <script>
 import AddModal from '@/components/AddModal'
-const listData = [];
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://www.antdv.com/',
-    title: `ant design vue part ${i}`,
-    avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    description:
-        'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-    content:
-        'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-  });
-}
+
 export default {
   name: 'ObjectCard',
   props: {
@@ -54,6 +40,10 @@ export default {
     type: {
       required: true,
       type: String
+    },
+    res: {
+      required: true,
+      type: Object
     }
   },
   components: {
@@ -61,23 +51,49 @@ export default {
   },
   data() {
     return {
-      listData,
       pagination: {
         onChange: page => {
-          console.log(page);
+          this.pagination.current = page
+          this.refresh()
         },
+        current: this.res.page,
         pageSize: 3,
-      },
-      actions: [
-        { type: 'star-o', text: '156' },
-        { type: 'like-o', text: '156' },
-        { type: 'message', text: '2' },
-      ],
+        total: this.res.size,
+        size: 'small'
+      }
     }
   },
   methods: {
     handleAdd() {
-      this.$refs.addModal.showModal(this.type)
+      this.$refs.addModal.showModal(this.type, undefined)
+    },
+    refresh() {
+      this.$emit('fetch-data', this.pagination)
+    },
+    handleEdit(item) {
+      this.$refs.addModal.showModal(this.type, {...item})
+    },
+    handleDelete(item) {
+      const that = this
+      this.$confirm({
+        title: `您确定要删除${item.name}的信息吗？`,
+        onOk() {
+          const url = item._links.self.href
+          that.$axios.delete(url).then(res => {
+            if (204 === res.status) {
+              that.$message.success('删除成功');
+              that.refresh();
+            } else {
+              that.$message.error('删除失败')
+            }
+          })
+        }
+      })
+    }
+  },
+  watch: {
+    res(n) {
+      this.pagination.total = n.size
     }
   }
 }

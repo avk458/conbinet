@@ -1,10 +1,45 @@
 server:
   port: 8081
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+  profiles:
+    active: @profileActive@
+
+---
+spring:
+  profiles: dev
+  datasource:
+    url: jdbc:h2:./cabinet;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password188
+image:
+  unit-path: hitek/A03/images/2020/
+  location: E:/FtpFolder_ilis/
+  deploy: http://192.168.2.3:8801/fileShare/
+
+
+---
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:h2:E:/FtpFolder_ilis/cabinet;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password188
+image:
+  unit-path: hitek/A03/images/2020/
+  location: E:/FtpFolder_ilis/
+  deploy: http://192.168.2.3:8801/fileShare/

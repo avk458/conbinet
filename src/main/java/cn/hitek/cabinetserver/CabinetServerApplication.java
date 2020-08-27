@@ -2,12 +2,13 @@ package cn.hitek.cabinetserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 /**
  * @author chenlm
  */
 @SpringBootApplication
-public class CabinetServerApplication {
+public class CabinetServerApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         SpringApplication.run(CabinetServerApplication.class, args);

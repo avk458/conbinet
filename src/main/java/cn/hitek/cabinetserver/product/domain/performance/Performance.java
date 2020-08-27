@@ -1,15 +1,12 @@
-package cn.hitek.cabinetserver.product.domain.person;
+package cn.hitek.cabinetserver.product.domain.performance;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-/**
- * @author chenlm
- */
 @Entity
-public class Person {
+public class Performance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -36,10 +36,10 @@
       <a-row :gutter="8">
         <a-col :span="2"/>
         <a-col :md="6" :lg="10">
-          <ObjectCard title="人员简介" type="person"/>
+          <ObjectCard ref="person" title="人员简介" type="person" :res="persons" @fetch-data="getPersons"/>
         </a-col>
         <a-col :md="6" :lg="10">
-          <ObjectCard title="业绩展示" type="performance"/>
+          <ObjectCard title="业绩展示" type="performance" :res="performances" @fetch-data="getPerformances"/>
         </a-col>
         <a-col :span="2"/>
       </a-row>
@@ -61,7 +61,9 @@ export default {
     return {
       isLogin: false,
       hasErrors,
-      form: this.$form.createForm(this, { name: 'horizontal_login' }),
+      form: this.$form.createForm(this, { name: 'login' }),
+      persons: {},
+      performances: {}
     }
   },
   methods: {
@@ -84,8 +86,42 @@ export default {
             this.isLogin = true
           }
         }
-      });
+      })
     },
+    getPersons(params) {
+      let page = 0, size = 3
+      if (params) {
+        page = params.current - 1;
+        size = params.pageSize
+      }
+      this.$axios(`/person?page=${page}&size=${size}&sort=sequence`).then(res => {
+        if (200 === res.status) {
+          this.persons = {}
+          this.persons.data = res.data._embedded.person;
+          this.persons.page = res.data.page.number + 1
+          this.persons.size = res.data.page.totalElements
+        }
+      })
+    },
+    getPerformances(params) {
+      let page = 0, size = 3
+      if (params) {
+        page = params.current - 1;
+        size = params.pageSize
+      }
+      this.$axios(`/performance?page=${page}&size=${size}&sort=sequence`).then(res => {
+        if (200 === res.status) {
+          this.performances = {}
+          this.performances.data = res.data._embedded.perform
+          this.performances.page = res.data.page.number + 1
+          this.performances.size = res.data.page.totalElements
+        }
+      })
+    }
+  },
+  mounted() {
+    this.getPersons()
+    this.getPerformances()
   }
 }
 </script>

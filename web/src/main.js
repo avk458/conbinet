@@ -1,16 +1,14 @@
 import Vue from 'vue'
 import App from './App.vue'
 import antd from 'ant-design-vue'
-import 'ant-design-vue/dist/antd.css';
+import 'ant-design-vue/dist/antd.css'
+import axios from 'axios'
 
-Vue.use(antd)
-// Vue.component(Card.name, Card)
-// Vue.component(Row.name, Row)
-// Vue.component(Col.name, Col)
-// Vue.component(List.name, List.Item.Meta, List.Item, List)
-// Vue.component(Icon.name, Icon)
-// Vue.component(Avatar.name, Avatar)
-// Vue.component(Statistic.name, Statistic)
+Vue.use(antd, axios)
+axios.defaults.baseURL = process.env.NODE_ENV === 'production'
+  ? '/cabinet-server/'
+  : '/'
+Vue.prototype.$axios = axios
 
 Vue.config.productionTip = false
 
